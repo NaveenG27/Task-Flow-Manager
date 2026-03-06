@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../config/prisma.js";
 
 export const logActivity = async (user_id, task_id, action) => {
   try {
     await prisma.log.create({
       data: {
-        action: action,
+        action,
         taskId: task_id
       }
     });
