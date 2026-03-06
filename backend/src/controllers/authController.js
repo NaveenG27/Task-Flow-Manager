@@ -1,28 +1,29 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import prisma from "../config/prisma.js";
 
 // REGISTER USER
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role = "user" } = req.body;
+    const { name, email, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const { error } = await supabase.from("users").insert([
-      {
+    const user = await prisma.user.create({
+      data: {
         name,
         email,
-        password: hashedPassword,
-        role,
-        is_active: true,
-      },
-    ]);
+        password: hashedPassword
+      }
+    });
 
-    if (error) return res.status(400).json({ error });
+    return res.json({
+      message: "User registered successfully",
+      user
+    });
 
-    return res.json({ message: "User registered successfully" });
   } catch (err) {
+    console.error("Register Error:", err);
     return res.status(500).json({ error: err.message });
   }
 };
@@ -32,33 +33,31 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const { data: users, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .limit(1);
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
 
-    if (error || users.length === 0)
+    if (!user)
       return res.status(400).json({ error: "Invalid email" });
-
-    const user = users[0];
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) return res.status(400).json({ error: "Incorrect password" });
+    if (!isMatch)
+      return res.status(400).json({ error: "Incorrect password" });
 
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
     return res.json({
       message: "Login successful",
-      token,
-      role: user.role,
+      token
     });
+
   } catch (err) {
+    console.error("Login Error:", err);
     return res.status(500).json({ error: err.message });
   }
 };

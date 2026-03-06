@@ -1,16 +1,23 @@
-
+import prisma from "../config/prisma.js";
 
 export const getLogs = async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from("activity_logs")
-      .select("*")
-      .order("timestamp", { ascending: false });
 
-    if (error) return res.status(400).json({ error });
+    const logs = await prisma.log.findMany({
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
 
-    return res.json(data);
+    return res.json(logs);
+
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    console.error("Logs Error:", err);
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };

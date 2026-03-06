@@ -20,7 +20,9 @@ model Task {
   id          String   @id @default(cuid())
   title       String
   description String?
-  status      String   @default("pending")
+  status      String   @default("todo")
+  priority    String   @default("low")
+  due_date    DateTime?
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
