@@ -29,8 +29,10 @@ export const registerUser = async (req, res) => {
 };
 
 // LOGIN USER
+// LOGIN USER
 export const loginUser = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({
@@ -46,14 +48,18 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Incorrect password" });
 
     const token = jwt.sign(
-      { id: user.id },
+      {
+        id: user.id,
+        role: user.role
+      },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
     return res.json({
       message: "Login successful",
-      token
+      token,
+      role: user.role
     });
 
   } catch (err) {
