@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { supabase } from "../config/supabase.js";
+
 
 // REGISTER USER
 export const registerUser = async (req, res) => {

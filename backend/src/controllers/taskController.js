@@ -1,4 +1,3 @@
-import { supabase } from "../config/supabase.js";
 import { logActivity } from "../utils/logActivity.js";
 
 

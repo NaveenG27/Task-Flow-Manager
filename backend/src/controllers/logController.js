@@ -1,4 +1,4 @@
-import { supabase } from "../config/supabase.js";
+
 
 export const getLogs = async (req, res) => {
   try {
