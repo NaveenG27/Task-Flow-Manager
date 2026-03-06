@@ -23,9 +23,10 @@ model Task {
   description String?
   status      String   @default("todo")
   priority    String   @default("low")
-  due_date    DateTime?
+  dueDate     DateTime?
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+  logs        Log[]
   createdAt   DateTime @default(now())
 }
 
@@ -33,5 +34,6 @@ model Log {
   id        String   @id @default(cuid())
   action    String
   taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
   createdAt DateTime @default(now())
 }
