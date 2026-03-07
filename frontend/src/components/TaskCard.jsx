@@ -32,21 +32,21 @@ function TaskCard({ task, updateStatus, deleteTask }) {
       </p>
 
       {/* Assigned + Due Date */}
-      <div className="text-xs text-gray-500 mt-2 space-y-1">
+<div className="text-xs text-gray-500 mt-2 space-y-1">
 
-        {task.assigned_to && (
-          <div>
-           👤 Assigned: {task.users?.name || "Unassigned"}
-          </div>
-        )}
+  {task.user && (
+    <div>
+      👤 Assigned: {task.user?.name || "Unassigned"}
+    </div>
+  )}
 
-        {task.due_date && (
-          <div>
-            📅 Due: {new Date(task.due_date).toLocaleDateString()}
-          </div>
-        )}
+  {task.dueDate && (
+    <div>
+      📅 Due: {new Date(task.dueDate).toLocaleDateString()}
+    </div>
+  )}
 
-      </div>
+</div>
 
       {/* Status Buttons */}
       <div className="flex flex-wrap gap-2 mt-3">

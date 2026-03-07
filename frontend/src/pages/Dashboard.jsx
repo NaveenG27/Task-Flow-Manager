@@ -12,12 +12,12 @@ function Dashboard() {
   const [stats, setStats] = useState(null);
 
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    priority: "low",
-    assigned_to: "",
-    due_date: ""
-  });
+  title: "",
+  description: "",
+  priority: "low",
+  userId: "",
+  dueDate: ""
+});
 
   const role = localStorage.getItem("role");
 
@@ -47,26 +47,26 @@ function Dashboard() {
     });
   };
 
-  const createTask = async () => {
-    try {
+ const createTask = async () => {
+  try {
 
-      await API.post("/tasks/create", form);
+    await API.post("/tasks/create", form);
 
-      setForm({
-        title: "",
-        description: "",
-        priority: "low",
-        assigned_to: "",
-        due_date: ""
-      });
+    setForm({
+      title: "",
+      description: "",
+      priority: "low",
+      userId: "",
+      dueDate: ""
+    });
 
-      fetchTasks();
-      fetchStats();
+    fetchTasks();
+    fetchStats();
 
-    } catch (err) {
-      console.log(err.response?.data);
-    }
-  };
+  } catch (err) {
+    console.log(err.response?.data);
+  }
+};
 
   const updateStatus = async (id, status) => {
     await API.put(`/tasks/status/${id}`, { status });
@@ -242,22 +242,21 @@ function Dashboard() {
                 <option value="high">High</option>
               </select>
 
-              <input
-                name="assigned_to"
-                value={form.assigned_to}
-                placeholder="Assigned User ID"
-                onChange={handleChange}
-                className="border p-2 rounded"
-              />
+             <input
+  name="userId"
+  value={form.userId}
+  placeholder="Assigned User ID"
+  onChange={handleChange}
+  className="border p-2 rounded"
+/>
 
               <input
-                type="date"
-                name="due_date"
-                value={form.due_date}
-                onChange={handleChange}
-                className="border p-2 rounded"
-              />
-
+  type="date"
+  name="dueDate"
+  value={form.dueDate}
+  onChange={handleChange}
+  className="border p-2 rounded"
+/>
             </div>
 
             <button
