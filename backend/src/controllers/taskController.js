@@ -6,16 +6,16 @@ import { logActivity } from "../utils/logActivity.js";
 export const createTask = async (req, res) => {
   try {
 
-    const { title, description, priority, assigned_to, due_date } = req.body;
+    const { title, description, priority, dueDate } = req.body;
 
-    const task = await prisma.task.create({
+await prisma.task.create({
   data: {
     title,
     description,
     priority,
     status: "todo",
-    userId,
-    dueDate: due_date
+    userId: req.user.id,
+    dueDate: new Date(dueDate)
   }
 });
 

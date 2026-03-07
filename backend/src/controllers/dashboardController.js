@@ -47,13 +47,13 @@ export const getDashboardSummary = async (req, res) => {
     nextWeek.setDate(today.getDate() + 7);
 
     const dueSoon = await prisma.task.findMany({
-      where: {
-        due_date: {
-          gte: today,
-          lte: nextWeek
-        }
-      }
-    });
+  where: {
+    dueDate: {
+      gte: today,
+      lte: nextWeek
+    }
+  }
+});
 
     return res.json({
       totalTasks,
