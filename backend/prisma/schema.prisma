@@ -12,22 +12,22 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      String   @default("user")
+  role      Role     @default(user)
   tasks     Task[]
   createdAt DateTime @default(now())
 }
 
 model Task {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   description String?
-  status      String   @default("todo")
-  priority    String   @default("low")
+  status      TaskStatus @default(todo)
+  priority    Priority   @default(low)
   dueDate     DateTime?
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
   logs        Log[]
-  createdAt   DateTime @default(now())
+  createdAt   DateTime   @default(now())
 }
 
 model Log {
@@ -36,4 +36,23 @@ model Log {
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id])
   createdAt DateTime @default(now())
+}
+
+enum Role {
+  user
+  admin
+  super_admin
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  review
+  done
+}
+
+enum Priority {
+  low
+  mid
+  high
 }
