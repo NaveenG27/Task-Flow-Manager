@@ -16,8 +16,8 @@ export const createTask = async (req, res) => {
         status: "todo",
         dueDate: dueDate ? new Date(dueDate) : null,
 
-        createdById: req.user.id,   // creator
-        assignedToId                // assigned user
+        createdById: req.user.id,   
+        assignedToId                
       }
     });
 
