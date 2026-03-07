@@ -38,18 +38,15 @@ export const getAllTasks = async (req, res) => {
   try {
 
     const tasks = await prisma.task.findMany({
+      orderBy: {
+        createdAt: "desc"
+      },
       include: {
-        assignedTo: {
+        user: {
           select: {
             id: true,
             name: true,
             email: true
-          }
-        },
-        createdBy: {
-          select: {
-            id: true,
-            name: true
           }
         }
       }
