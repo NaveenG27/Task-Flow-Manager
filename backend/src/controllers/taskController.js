@@ -8,24 +8,32 @@ export const createTask = async (req, res) => {
 
     const { title, description, priority, dueDate } = req.body;
 
-await prisma.task.create({
-  data: {
-    title,
-    description,
-    priority,
-    status: "todo",
-    userId: req.user.id,
-    dueDate: new Date(dueDate)
-  }
-});
+    const task = await prisma.task.create({
+      data: {
+        title,
+        description,
+        priority,
+        status: "todo",
+        userId: req.user.id,
+        dueDate: dueDate ? new Date(dueDate) : null
+      }
+    });
 
     await logActivity(req.user.id, task.id, "Task Created");
 
-    return res.json({ message: "Task created successfully", task });
+    return res.json({
+      message: "Task created successfully",
+      task
+    });
 
   } catch (err) {
+
     console.error("Create Task Error:", err);
-    return res.status(500).json({ error: err.message });
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };
 
