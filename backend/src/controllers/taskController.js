@@ -9,22 +9,15 @@ export const createTask = async (req, res) => {
     const { title, description, priority, dueDate, userId } = req.body;
 
     const task = await prisma.task.create({
-      data: {
-        title,
-        description,
-        priority,
-        status: "todo",
-        dueDate: dueDate ? new Date(dueDate) : null,
-
-        // assign task to user
-        assignedTo: {
-          connect: { id: userId }
-        },
-
-        // who created the task
-        createdBy: req.user.id
-      }
-    });
+  data: {
+    title,
+    description,
+    priority,
+    status: "todo",
+    dueDate: dueDate ? new Date(dueDate) : null,
+    userId: userId
+  }
+});
 
     await logActivity(req.user.id, task.id, "Task Created");
 

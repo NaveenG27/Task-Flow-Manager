@@ -8,64 +8,39 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(user)
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role     String @default("user")
 
-  // Tasks created by this user
-  createdTasks  Task[] @relation("CreatedTasks")
-
-  // Tasks assigned to this user
-  assignedTasks Task[] @relation("AssignedTasks")
+  tasks Task[] // tasks assigned to this user
 
   createdAt DateTime @default(now())
 }
 
 model Task {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   description String?
-  status      TaskStatus @default(todo)
-  priority    Priority   @default(low)
+  status      String    @default("todo")
+  priority    String    @default("low")
   dueDate     DateTime?
 
-  // Creator
-  createdById String
-  createdBy   User @relation("CreatedTasks", fields: [createdById], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  // Assigned user
-  assignedToId String
-  assignedTo   User @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  logs Log[]
 
-  logs      Log[]
   createdAt DateTime @default(now())
 }
 
 model Log {
-  id        String   @id @default(cuid())
-  action    String
-  taskId    String
-  task      Task     @relation(fields: [taskId], references: [id])
+  id     String @id @default(cuid())
+  action String
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id])
+
   createdAt DateTime @default(now())
-}
-
-enum Role {
-  user
-  admin
-  super_admin
-}
-
-enum TaskStatus {
-  todo
-  in_progress
-  review
-  done
-}
-
-enum Priority {
-  low
-  mid
-  high
 }
