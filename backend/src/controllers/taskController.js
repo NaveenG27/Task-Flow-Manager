@@ -16,8 +16,12 @@ export const createTask = async (req, res) => {
         status: "todo",
         dueDate: dueDate ? new Date(dueDate) : null,
 
-        userId: userId,
-        
+        // assign task to user
+        assignedTo: {
+          connect: { id: userId }
+        },
+
+        // who created the task
         createdBy: req.user.id
       }
     });
@@ -30,13 +34,8 @@ export const createTask = async (req, res) => {
     });
 
   } catch (err) {
-
     console.error("Create Task Error:", err);
-
-    return res.status(500).json({
-      error: err.message
-    });
-
+    return res.status(500).json({ error: err.message });
   }
 };
 
