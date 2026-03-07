@@ -13,7 +13,13 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(user)
-  tasks     Task[]
+
+  // Tasks created by this user
+  createdTasks  Task[] @relation("CreatedTasks")
+
+  // Tasks assigned to this user
+  assignedTasks Task[] @relation("AssignedTasks")
+
   createdAt DateTime @default(now())
 }
 
@@ -24,10 +30,17 @@ model Task {
   status      TaskStatus @default(todo)
   priority    Priority   @default(low)
   dueDate     DateTime?
-  userId      String
-  user        User       @relation(fields: [userId], references: [id])
-  logs        Log[]
-  createdAt   DateTime   @default(now())
+
+  // Creator
+  createdById String
+  createdBy   User @relation("CreatedTasks", fields: [createdById], references: [id])
+
+  // Assigned user
+  assignedToId String
+  assignedTo   User @relation("AssignedTasks", fields: [assignedToId], references: [id])
+
+  logs      Log[]
+  createdAt DateTime @default(now())
 }
 
 model Log {

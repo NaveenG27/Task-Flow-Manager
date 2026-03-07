@@ -6,7 +6,7 @@ import { logActivity } from "../utils/logActivity.js";
 export const createTask = async (req, res) => {
   try {
 
-    const { title, description, priority, dueDate } = req.body;
+    const { title, description, priority, dueDate, assignedToId } = req.body;
 
     const task = await prisma.task.create({
       data: {
@@ -14,8 +14,10 @@ export const createTask = async (req, res) => {
         description,
         priority,
         status: "todo",
-        userId: req.user.id,
-        dueDate: dueDate ? new Date(dueDate) : null
+        dueDate: dueDate ? new Date(dueDate) : null,
+
+        createdById: req.user.id,   // creator
+        assignedToId                // assigned user
       }
     });
 
@@ -44,11 +46,17 @@ export const getAllTasks = async (req, res) => {
 
     const tasks = await prisma.task.findMany({
       include: {
-        user: {
+        assignedTo: {
           select: {
             id: true,
             name: true,
             email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true
           }
         }
       }
@@ -57,7 +65,13 @@ export const getAllTasks = async (req, res) => {
     return res.json(tasks);
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    console.error("Get Tasks Error:", err);
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };
 
@@ -69,16 +83,27 @@ export const getTaskById = async (req, res) => {
     const { id } = req.params;
 
     const task = await prisma.task.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        assignedTo: true,
+        createdBy: true
+      }
     });
 
-    if (!task)
-      return res.status(404).json({ error: "Task not found" });
+    if (!task) {
+      return res.status(404).json({
+        error: "Task not found"
+      });
+    }
 
     return res.json(task);
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };
 
@@ -103,7 +128,11 @@ export const updateTaskStatus = async (req, res) => {
     });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };
 
@@ -117,8 +146,11 @@ export const updateTaskPriority = async (req, res) => {
 
     const validPriorities = ["low", "mid", "high"];
 
-    if (!validPriorities.includes(priority))
-      return res.status(400).json({ error: "Invalid priority" });
+    if (!validPriorities.includes(priority)) {
+      return res.status(400).json({
+        error: "Invalid priority"
+      });
+    }
 
     const task = await prisma.task.update({
       where: { id },
@@ -133,7 +165,11 @@ export const updateTaskPriority = async (req, res) => {
     });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };
 
@@ -150,9 +186,15 @@ export const deleteTask = async (req, res) => {
 
     await logActivity(req.user.id, id, "Task Deleted");
 
-    return res.json({ message: "Task deleted successfully" });
+    return res.json({
+      message: "Task deleted successfully"
+    });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    return res.status(500).json({
+      error: err.message
+    });
+
   }
 };
